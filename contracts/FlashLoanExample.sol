@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@aave/core-v3/contracts/flashloan/base/FlashLoanSimpleReceiverBase.sol";
@@ -14,11 +14,11 @@ contract FlashLoanExample is FlashLoanSimpleReceiverBase {
     {}
 
     function createFlashLoan(address asset, uint amount) external {
-        address reciever = address(this);
-        bytes memory params = "";
+        address receiver = address(this);
+        bytes memory params = ""; // use this to pass arbitrary data to executeOperation
         uint16 referralCode = 0;
 
-        POOL.flashLoanSimple(reciever, asset, amount, params, referralCode);
+        POOL.flashLoanSimple(receiver, asset, amount, params, referralCode);
     }
 
     function executeOperation(
@@ -28,8 +28,9 @@ contract FlashLoanExample is FlashLoanSimpleReceiverBase {
         address initiator,
         bytes calldata params
     ) external returns (bool) {
-        // do things like arbitrage, liquidation, etc
+        // do things like arbitrage here
         // abi.decode(params) to decode params
+
         uint amountOwing = amount.add(premium);
         IERC20(asset).approve(address(POOL), amountOwing);
         emit Log(asset, amountOwing);
